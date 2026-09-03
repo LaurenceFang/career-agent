@@ -4,17 +4,19 @@ An AI job-search workspace where the agent does the work but **cannot sign
 off on it**: every claim must trace to evidence, and every consequential
 action waits for a human.
 
-Local-first. Private state stays local. Optional connectors (ATS APIs, Gmail,
-Notion) only read outbound; nothing is sent, submitted, or overwritten without
-an explicit confirmation step enforced in code, not in prose.
+Local-first. Private state stays local. ATS and Gmail connectors are
+read-only; the Notion tracker lane is the only implemented external write and
+requires explicit confirmation. Email sending and application submission are
+not implemented at all — the tool drafts, a person sends. Nothing overwrites
+immutable artifacts, in all cases enforced by code rather than prose.
 
 ## Why this exists
 
 Most AI-assisted job hunting produces confident nonsense: invented metrics,
 unverified claims, resumes that read well and die in screening. This project
 treats the model's fluency as the threat model. The agent drafts; a
-deterministic gate independently decides whether the draft is allowed to
-exist; a human decides whether it is allowed to leave.
+deterministic gate independently decides whether a draft clears validation;
+a human decides whether anything leaves the machine.
 
 ## Trust boundary
 
@@ -27,15 +29,16 @@ flowchart LR
     AGENT --> GATE{provenance gate<br/>deterministic, stdlib-only}
     GATE -- blocked: exact reason --> AGENT
     GATE -- passed --> HUMAN{human review}
-    HUMAN -- explicit per-action confirm --> SHIP[export / send / track]
+    HUMAN -- explicit per-action confirm --> SHIP[local export<br/>confirmed Notion sync]
 ```
 
 **The agent can:** index evidence, import and hash job snapshots, score them
 against a hard-constraint rubric, draft resumes/letters/prep, run validators,
 raise contradictions.
 
-**The agent cannot:** send email, submit applications, write to external
-trackers, overwrite approved facts or submitted materials, or export any
+**The agent cannot:** send email or submit applications (neither capability
+exists in this codebase), write to the external tracker without a typed
+confirmation, overwrite approved facts or submitted materials, or clear any
 resume line whose provenance does not resolve — even when asked to. Job
 descriptions are parsed as data; instructions embedded in them are inert.
 

@@ -3,8 +3,12 @@
 
 Every test builds an isolated fixture workspace in a temp directory; none of
 them touch the real profile or resumes. The point of this suite is not a
-green checkmark: each negative case exists because that exact class of bad
-input once produced a wrong-looking-correct resume artifact.
+green checkmark: each negative case is an adversarial input chosen to prove
+that the checker can actually fail, because a checker that cannot fail is
+theater. One case in the middle of this file's history was real — the
+gate/schema shape mismatch that motivated the canonical schema — and the
+absolute-path case below is a regression test for a false-negative found in
+review; the rest are designed attacks.
 
 Run: python -m unittest discover -s tests -v   (stdlib only)
      pytest tests                              (works too, optional)
@@ -164,6 +168,32 @@ class GateNegative(unittest.TestCase):
         with tempfile.TemporaryDirectory() as raw:
             build_workspace(Path(raw), resume=resume)
             self._blocked(Path(raw), "Unmapped resume bullet")
+
+    def test_nonexistent_absolute_evidence_path_blocks(self):
+        """Regression: absolute paths once escaped the existence check via
+        `and not Path(path).is_absolute()`. They must resolve and exist too."""
+        import tempfile as _tf
+        fake_abs = str(Path(_tf.gettempdir()) / "definitely-not-here-career-agent.md")
+        prov = json.loads((FIXTURES / "provenance_good.json").read_text(encoding="utf-8"))
+        prov["bullets"][0]["evidence_paths"] = [fake_abs]
+        with tempfile.TemporaryDirectory() as raw:
+            build_workspace(Path(raw), provenance=prov)
+            self._blocked(Path(raw), "Evidence path not found")
+
+    def test_real_absolute_evidence_path_passes(self):
+        """Symmetric check so the absolute branch cannot be trivially satisfied
+        by always failing: a genuinely existing absolute path must pass."""
+        with tempfile.TemporaryDirectory() as raw:
+            tmp = Path(raw)
+            build_workspace(tmp)
+            real = (tmp / "fixtures" / "demo" / "evidence" / "example_agent.md").resolve()
+            prov = json.loads((FIXTURES / "provenance_good.json").read_text(encoding="utf-8"))
+            prov["bullets"][0]["evidence_paths"] = [str(real)]
+            (tmp / "resumes" / "generated" / "demo-gate" / "provenance.json").write_text(
+                json.dumps(prov), encoding="utf-8")
+            code, report = run_gate(tmp)
+            self.assertEqual(code, 0, report.get("errors"))
+            self.assertEqual(report["status"], "passed")
 
     def test_absent_profile_store_exits_two_with_guidance(self):
         with tempfile.TemporaryDirectory() as raw:

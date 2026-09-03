@@ -40,10 +40,11 @@ def known_fact_ids(profile: dict) -> set[str]:
 def resume_bullets(path: Path) -> list[str]:
     """Every '- ' line is a claim that must be provenance-mapped.
 
-    Historical note: this parser is line-based on purpose. It once blocked a
-    correct resume because a Skills section was written as a '- ' list; the
-    fix is authoring discipline, and tests/test_gate.py pins the behavior so
-    it can never silently widen or narrow again.
+    The parser is deliberately line-based: any '- ' prefix counts as a claim,
+    including section-style lists (a Skills block written with '- ' lines must
+    therefore carry provenance per line). This makes the rule visible to the
+    authoring side instead of silently ignoring content. tests/test_gate.py
+    pins the behavior so it can never widen or narrow without a test failure.
     """
     return [line[2:].strip() for line in path.read_text(encoding="utf-8").splitlines() if line.startswith("- ")]
 
@@ -98,8 +99,10 @@ def verify(job_id: str, root: Path) -> int:
                 for fact_id in item.get("fact_ids") or []:
                     if fact_id not in known:
                         errors.append(f"Unknown fact id for bullet: {text}")
-                for path in item.get("evidence_paths") or []:
-                    if not (root / path).exists() and not Path(path).is_absolute():
+                for entry in item.get("evidence_paths") or []:
+                    candidate = Path(entry)
+                    resolved = candidate if candidate.is_absolute() else root / candidate
+                    if not resolved.exists():
                         errors.append(f"Evidence path not found for bullet: {item.get('bullet_id', text[:40])}")
 
     for bullet in bullets:

@@ -3,7 +3,7 @@
 
 Mirrors schemas/provenance.schema.json without a third-party validator so the
 core pipeline stays stdlib-only. If that schema file changes, update this to
-match (tests/test_provenance_schema.py checks the required-key lists agree).
+match (tests/test_gate.py SchemaContract checks the required-key lists agree).
 """
 
 from __future__ import annotations
