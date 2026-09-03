@@ -8,7 +8,9 @@
   passes).
 - Documentation honesty: email sending and application submission described
   as unimplemented capabilities rather than confirmation-gated actions;
-  Notion lane stated as the only implemented external write (confirmed).
+  implemented external writes stated precisely — Notion tracker sync and
+  Google Calendar event creation, both requiring explicit confirmation,
+  while Gmail and ATS access remain read-only.
 - Test rationale reworded as adversarial design, with the two genuinely
   historical incidents (schema-shape drift, absolute-path review catch)
   labeled as such.
