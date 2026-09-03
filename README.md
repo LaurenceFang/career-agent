@@ -68,7 +68,7 @@ Resume gate: blocked -> resumes\generated\demo-gate\gate_report.json
 
 Steps 1 and 3 prove the same code passes valid input; step 2 proves it
 refuses invented, missing, or unresolvable claims. The test suite
-(`tests/test_gate.py`, 14 tests, stdlib-only) pins each failure class —
+(`tests/test_gate.py`, stdlib-only) pins each failure class —
 including the sharp ones: a provenance entry pointing at a bullet that does
 not **exist** is also blocked, and `- **bold**` inside a bullet fails exact
 match on purpose (authoring discipline is part of the contract).
@@ -77,7 +77,7 @@ match on purpose (authoring discipline is part of the contract).
 
 ```
 git clone https://github.com/LaurenceFang/career-agent && cd career-agent
-python -m unittest discover -s tests    # 18 tests, zero dependencies
+python -m unittest discover -s tests    # 20 tests, zero dependencies
 python scripts/run_demo.py              # end-to-end BLOCKED -> PASSED proof
 ```
 

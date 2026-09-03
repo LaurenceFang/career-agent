@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.1 — 2026-09-03 (review patch)
+
+- Fixed a gate false-negative: nonexistent absolute evidence paths escaped
+  the existence check; both relative and absolute paths now must resolve,
+  with paired regression tests (bad absolute path blocks, real absolute path
+  passes).
+- Documentation honesty: email sending and application submission described
+  as unimplemented capabilities rather than confirmation-gated actions;
+  Notion lane stated as the only implemented external write (confirmed).
+- Test rationale reworded as adversarial design, with the two genuinely
+  historical incidents (schema-shape drift, absolute-path review catch)
+  labeled as such.
+
 ## 0.3.0 — 2026-09-03 (public mirror hardening)
 
 - Republished as a sanitized public mirror: personal facts, real job
