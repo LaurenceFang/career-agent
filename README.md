@@ -4,11 +4,12 @@ An AI job-search workspace where the agent does the work but **cannot sign
 off on it**: every claim must trace to evidence, and every consequential
 action waits for a human.
 
-Local-first. Private state stays local. ATS and Gmail connectors are
-read-only; the Notion tracker lane is the only implemented external write and
-requires explicit confirmation. Email sending and application submission are
-not implemented at all — the tool drafts, a person sends. Nothing overwrites
-immutable artifacts, in all cases enforced by code rather than prose.
+Local-first. Private state stays local. Gmail and ATS access are read-only.
+The external writes currently implemented are Notion tracker sync and Google
+Calendar event creation; both require explicit human confirmation. Email
+sending and application submission are not implemented at all — the tool
+drafts, a person sends. Nothing overwrites immutable artifacts, in all cases
+enforced by code rather than prose.
 
 ## Why this exists
 
@@ -29,7 +30,7 @@ flowchart LR
     AGENT --> GATE{provenance gate<br/>deterministic, stdlib-only}
     GATE -- blocked: exact reason --> AGENT
     GATE -- passed --> HUMAN{human review}
-    HUMAN -- explicit per-action confirm --> SHIP[local export<br/>confirmed Notion sync]
+    HUMAN -- explicit per-action confirm --> SHIP[local export<br/>confirmed Notion sync /<br/>Calendar event]
 ```
 
 **The agent can:** index evidence, import and hash job snapshots, score them
@@ -83,7 +84,7 @@ python scripts/run_demo.py              # end-to-end BLOCKED -> PASSED proof
 
 Core pipeline (intake → scoring → drafting → gating) is pure standard
 library. Optional extras: `pip install -r requirements-docs.txt` (DOCX/PDF
-workflows), `requirements-connectors.txt` (Gmail lane; Notion lane needs a
+workflows), `requirements-connectors.txt` (Gmail/Calendar lane; Notion lane needs a
 local Hermes runtime).
 
 ## Layout

@@ -25,7 +25,7 @@ flowchart LR
     AGENT --> GATE{provenance gate<br/>deterministic}
     GATE -- "blocked: named reason" --> AGENT
     GATE -- passed --> HUMAN{human review}
-    HUMAN -- "explicit per-action<br/>confirmation" --> SHIP[local export<br/>confirmed Notion sync]
+    HUMAN -- "explicit per-action<br/>confirmation" --> SHIP[local export<br/>confirmed Notion sync /<br/>Calendar event]
     GATE -. "never passes without" .-> HUMAN
 ```
 
@@ -42,9 +42,11 @@ Three properties hold by construction, not by convention:
 3. **Consequential actions need a human — and most are not implemented at
    all.** Email sending and external application submission do not exist in
    this system; nothing can be sent that was not typed by a person elsewhere.
-   The one implemented external write, Notion tracker sync, requires a typed
-   confirmation (`sync`) or an explicit `--confirm` flag. Overwrites of
-   immutable artifacts are refused in code.
+   The two external writes that do exist — Notion tracker sync and Google
+   Calendar event creation — each require an explicit human confirmation:
+   Notion a typed `sync` (or `--confirm`), Calendar a per-event `--confirm`.
+   Gmail and ATS access are read-only. Overwrites of immutable artifacts are
+   refused in code.
 
 ## Layers
 
@@ -55,7 +57,7 @@ Three properties hold by construction, not by convention:
 | Drafting | `application_manager.py` | Generates materials from provenance-backed bases; refuses overwrite; archives frozen copies of submitted materials. |
 | Verification | `hermes_resume_gate.py`, `provenance_schema.py` | Stdlib-only; `--root` allows isolated fixture runs; nonzero exit = blocked. |
 | Retrieval | `rag_evidence.py` | Pure-Python BM25 over profile facts, job snapshots, and provenance claims so the agent quotes instead of recalls. |
-| Connectors (optional) | `google_workspace.py`, `notion_sync.py`, `notion_mcp.py` | Read-only scanning + proposal flows; every outbound write confirmation-gated; notion lane requires a local Hermes runtime. |
+| Connectors (optional) | `google_workspace.py`, `notion_sync.py`, `notion_mcp.py` | Gmail read-only; Notion sync and Google Calendar event creation are the implemented external writes, both per-action confirmation-gated; notion lane requires a local Hermes runtime. |
 
 ## Known limitations (public mirror)
 

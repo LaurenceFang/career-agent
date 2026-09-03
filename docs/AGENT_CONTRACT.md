@@ -34,9 +34,11 @@ Unresolved questions go to a review queue — guessing is a contract violation.
 
 ## Agent must not (blocked without explicit, current human confirmation)
 
-- Send email, submit an application, or drive any external form.
-- Write to any external tracker (Notion sync requires a typed confirmation;
-  see `scripts/notion_sync.py`).
+- Send email, submit an application, or drive any external form (none of
+  these capabilities exist in this codebase).
+- Write to an external tracker (Notion sync requires a typed confirmation;
+  see `scripts/notion_sync.py`) or create a Calendar event (requires a
+  per-event `--confirm`; see `scripts/google_workspace.py`).
 - Overwrite or delete submitted materials, approved facts, or job snapshots.
 - Export a resume whose provenance fails the deterministic gate
   (`scripts/hermes_resume_gate.py` returns nonzero and names the exact reason).
