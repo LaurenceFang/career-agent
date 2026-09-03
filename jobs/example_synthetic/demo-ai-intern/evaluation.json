@@ -1,0 +1,23 @@
+{
+  "job_id": "demo-ai-intern",
+  "evaluated_at": "2026-01-01T00:00:00+00:00",
+  "source": "synthetic_fixture",
+  "live_status": "fixture_not_a_real_listing",
+  "total": 71,
+  "label": "可尝试",
+  "scores": {
+    "location": 30,
+    "education": 20,
+    "technical": 8,
+    "evidence": 5,
+    "availability": 8
+  },
+  "hard_conditions": "通过",
+  "matched_skills": [
+    "python"
+  ],
+  "risks": [
+    "fixture — no real constraints applied"
+  ],
+  "recommendation": "Synthetic example output only."
+}

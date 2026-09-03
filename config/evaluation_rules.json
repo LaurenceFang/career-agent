@@ -1,0 +1,9 @@
+{
+  "weights": {"location": 30, "education": 20, "technical": 20, "evidence": 20, "availability": 10},
+  "location_rules": {
+    "accepted": ["Remote", "Work from Home", "Work-from-Home", "Global Remote", "Worldwide Remote", "Remote Worldwide", "China Remote"],
+    "conditional": ["Remote Asia", "Asia Remote", "Hong Kong Remote", "Singapore Remote"],
+    "rejected": ["On-site only", "US work authorization required", "EU work authorization required"]
+  },
+  "labels": [[75, "高度匹配"], [50, "可尝试"], [25, "低优先级"], [0, "不建议申请"]]
+}

@@ -1,0 +1,25 @@
+{
+  "skills": [
+    {
+      "name": "Python"
+    },
+    {
+      "name": "Git"
+    },
+    {
+      "name": "FastAPI"
+    },
+    {
+      "name": "SQLite"
+    },
+    {
+      "name": "LLM"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Example Agent Project",
+      "summary": "synthetic placeholder"
+    }
+  ]
+}

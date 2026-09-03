@@ -1,0 +1,41 @@
+# personal payload — never public
+profile/*
+!profile/example_facts.json
+resumes/
+applications/
+linkedin/
+sources/
+reports/
+ats/
+tmp/
+logs/
+.scratch/
+jobs/_incoming/
+jobs/discovery/
+
+# local secrets/config
+.env
+.env.*
+credentials.json
+*.pem
+*.key
+*_verification.json
+config/*.local.json
+config/google_oauth_client.json
+config/google_oauth_token.json
+config/notion.local.json
+
+# noise
+__pycache__/
+*.pyc
+*.png
+*.docx
+
+# generated trackers / verification artifacts (audit item)
+config/notion_sync_manifest.json
+jobs/RANKING.md
+jobs/inbox/*/evaluation.json
+jobs/inbox/*/ats_verification.json
+jobs/inbox/*/verification.json
+resumes/generated/
+**/.DS_Store

@@ -1,0 +1,34 @@
+{
+  "obsidian_vault": "C:/path/to/your/Obsidian-vault",
+  "allowed_obsidian_directories": ["Career"],
+  "resume_source_directory": "C:/path/to/your/resumes",
+  "candidate": {
+    "name": "<YOUR NAME>",
+    "location": "<CITY>, <COUNTRY>",
+    "phone": "<PHONE>",
+    "email": "<EMAIL>",
+    "github": "https://github.com/<you>",
+    "aliases": [],
+    "education_line": "<UNIVERSITY> — <DEGREE>, <DATES>",
+    "student": true,
+    "degree": "undergraduate",
+    "internship_only": true,
+    "remote_preferred": true
+  },
+  "parse_rules": {
+    "institution": "<YOUR UNIVERSITY>",
+    "institution_native": "<大学本机语名称>",
+    "major": "<YOUR MAJOR>",
+    "major_native": "<专业本机语名称>",
+    "degree": "<DEGREE>",
+    "start_date": "YYYY-MM",
+    "end_date": "YYYY-MM",
+    "projects": [
+      { "key": "project_example", "name": "Example Project", "terms": ["example-repo", "Example Project"] }
+    ],
+    "skills": ["Python", "Git"],
+    "leadership": [
+      { "key": "leadership_example", "name": "Example role", "terms": ["<native role term>"] }
+    ]
+  }
+}
