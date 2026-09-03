@@ -6,12 +6,16 @@ import argparse
 import asyncio
 import hashlib
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 import notion_mcp
 
 ROOT = Path(__file__).resolve().parents[1]
+if hasattr(sys.stdout, "reconfigure"):  # Windows consoles default to cp1252; labels/statuses are non-ASCII
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
 CONFIG = ROOT / "config" / "notion.local.json"
 MANIFEST = ROOT / "config" / "notion_sync_manifest.json"
 

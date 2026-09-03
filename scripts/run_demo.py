@@ -20,6 +20,9 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+if hasattr(sys.stdout, "reconfigure"):  # Windows consoles default to cp1252; labels/statuses are non-ASCII
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from hermes_resume_gate import verify  # noqa: E402
