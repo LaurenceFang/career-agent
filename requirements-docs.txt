@@ -1,0 +1,4 @@
+# Optional document extras for scripts/master_profile.py DOCX/PDF parsing and
+# scripts/application_manager.py / scripts/generate_base_resumes.py DOCX export.
+python-docx>=1.1.0
+pypdf>=5.0.0

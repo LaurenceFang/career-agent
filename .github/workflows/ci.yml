@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  core:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Byte-compile everything
+        run: python -m compileall -q scripts tests
+      - name: Test suite (stdlib only)
+        run: python -m unittest discover -s tests -v
+      - name: Synthetic demo end-to-end
+        run: python scripts/run_demo.py
+
+  extras:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install optional document extras
+        run: pip install -r requirements-docs.txt
+      - name: Base resume generator (with docx present)
+        run: python scripts/generate_base_resumes.py --docx
+      - name: Full test suite again against extras
+        run: python -m unittest discover -s tests -v

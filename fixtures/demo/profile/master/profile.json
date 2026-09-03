@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "note": "Synthetic career-profile fixture. Every fact below is fictional and demonstrates the canonical gate input shape.",
+  "identity": {
+    "status": "synthetic_fixture",
+    "public_header": {"name": "<NAME>", "github": "https://github.com/<you>"}
+  },
+  "education": [
+    {"id": "education_primary", "category": "education", "value": {"institution": "Example State University"}, "status": "verified_consensus", "evidence": [{"path": "fixtures/demo/evidence/coursework.md"}]}
+  ],
+  "projects": [
+    {"id": "project_example", "category": "projects", "value": {"name": "Example Agent Project"}, "status": "verified_consensus", "evidence": [{"path": "fixtures/demo/evidence/example_agent.md"}]},
+    {"id": "project_demo_tool", "category": "projects", "value": {"name": "Demo Scheduler Tool"}, "status": "verified_consensus", "evidence": [{"path": "fixtures/demo/evidence/example_agent.md"}]}
+  ],
+  "experience": [],
+  "leadership": [],
+  "skills": [
+    {"id": "skill_python", "category": "skills", "value": {"name": "Python", "level": "advanced"}, "status": "user_confirmed", "evidence": [{"path": "fixtures/demo/evidence/coursework.md"}]}
+  ],
+  "awards": [],
+  "certificates": [],
+  "evidence_index": {
+    "project_example": [{"path": "fixtures/demo/evidence/example_agent.md"}],
+    "project_demo_tool": [{"path": "fixtures/demo/evidence/example_agent.md"}],
+    "education_primary": [{"path": "fixtures/demo/evidence/coursework.md"}],
+    "skill_python": [{"path": "fixtures/demo/evidence/coursework.md"}]
+  }
+}

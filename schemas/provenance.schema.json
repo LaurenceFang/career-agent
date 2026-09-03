@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "provenance.schema.json",
+  "title": "Resume provenance manifest",
+  "description": "Canonical shape shared by base-resume provenance, generated-resume provenance and the gate. One bullet per draft '- ' line; every fact_id must exist in profile/master/profile.json (evidence_index keys or section item ids); every evidence path must be resolvable.",
+  "type": "object",
+  "required": ["job_id", "bullets"],
+  "properties": {
+    "job_id": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string" },
+    "source_base": { "type": "string" },
+    "status": { "type": "string" },
+    "bullets": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/bullet" }
+    }
+  },
+  "definitions": {
+    "bullet": {
+      "type": "object",
+      "required": ["bullet_id", "text", "fact_ids", "evidence_paths"],
+      "properties": {
+        "bullet_id": { "type": "string", "minLength": 1 },
+        "text": { "type": "string", "minLength": 1 },
+        "fact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "evidence_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

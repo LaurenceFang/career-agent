@@ -10,8 +10,6 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from docx import Document
-from pypdf import PdfReader
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE = ROOT / "profile"
@@ -45,8 +43,17 @@ def write_json(path, value):
 def fingerprint(text): return hashlib.sha256(re.sub(r"\s+", " ", text).strip().encode("utf-8")).hexdigest()
 
 
+def _lazy_docx():
+    """Optional document extras live behind pip install -r requirements-docs.txt."""
+    try:
+        from docx import Document
+        return Document
+    except ImportError as exc:
+        raise SystemExit("Document parsing needs optional extras: pip install -r requirements-docs.txt") from exc
+
+
 def extract_docx(path):
-    document = Document(path)
+    document = _lazy_docx()(path)
     chunks = [p.text.strip() for p in document.paragraphs if p.text.strip()]
     for table in document.tables:
         for row in table.rows:
@@ -58,7 +65,12 @@ def extract_docx(path):
 def extract(path):
     suffix = path.suffix.lower()
     if suffix == ".docx": return extract_docx(path)
-    if suffix == ".pdf": return "\n".join(page.extract_text() or "" for page in PdfReader(str(path)).pages)
+    if suffix == ".pdf":
+        try:
+            from pypdf import PdfReader
+        except ImportError as exc:
+            raise SystemExit("PDF parsing needs optional extras: pip install -r requirements-docs.txt") from exc
+        return "\n".join(page.extract_text() or "" for page in PdfReader(str(path)).pages)
     if suffix == ".md": return path.read_text(encoding="utf-8")
     raise ValueError(f"Unsupported extension: {suffix}")
 

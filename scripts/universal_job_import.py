@@ -103,8 +103,11 @@ def import_record(record: dict, requested_id: str | None, no_notion_sync: bool) 
     target.write_text("\n".join(["---", "source: universal_job_import", f"source_url: {record['url']}", "live_status: imported_from_user_requested_url", f"retrieved_at: {datetime.now(timezone.utc).isoformat()}", f"remote_scope: {remote_scope}", "education: unknown", f"extraction: {record['extraction']}", "---", "", f"# {record['title']} — {record['company']}", "", "## Imported job description", record["description"].strip()]) + "\n", encoding="utf-8")
     evaluate_job(SimpleNamespace(job_id=job_id)); rank_jobs(SimpleNamespace())
     if not no_notion_sync:
-        from notion_sync import run_sync
-        asyncio.run(run_sync(SimpleNamespace()))
+        try:
+            from notion_sync import run_sync
+            asyncio.run(run_sync(SimpleNamespace()))
+        except ImportError:
+            print("NOTE: Notion sync skipped (notion lane needs a local Hermes runtime).")
     return job_id
 
 

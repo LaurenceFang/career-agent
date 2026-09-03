@@ -1,4 +1,6 @@
+# Optional connector lanes (network reads; see docs/AGENT_CONTRACT.md).
 google-api-python-client>=2.170.0
 google-auth-oauthlib>=1.2.2
 PySocks>=1.7.1
-PyMuPDF>=1.28.0
+# Notion lane additionally requires a local Hermes runtime providing
+# `mcp` and `tools.mcp_oauth_manager`; it cannot run from this mirror alone.

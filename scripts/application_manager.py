@@ -14,10 +14,6 @@ import subprocess
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Inches, Pt
-
 ROOT = Path(__file__).resolve().parents[1]
 SETTINGS = json.loads((ROOT / "config" / "settings.local.json").read_text(encoding="utf-8")) if (ROOT / "config" / "settings.local.json").exists() else {}
 SIGNATURE = SETTINGS.get("candidate", {}).get("name", "<NAME>")
@@ -53,15 +49,28 @@ def application_dir(job_id: str) -> Path:
     return ROOT / "applications" / job_id
 
 
+def available_bases() -> list[str]:
+    suffix = ".provenance.json"
+    return sorted(p.name[: -len(suffix)] for p in (ROOT / "resumes" / "base").glob(f"*{suffix}"))
+
+
 def select_base(job_id: str, evaluation: dict) -> str:
+    """Keyword routing across bases that actually exist in this workspace.
+
+    The public mirror ships only synthetic bases; private workspaces may add
+    directional ones. Unknown keywords fall back to any available base rather
+    than a hard-coded name that may not exist.
+    """
+    bases = available_bases()
+    if not bases:
+        raise SystemExit("No base resumes with provenance found under resumes/base/. "
+                         "Run scripts/generate_base_resumes.py for the synthetic example, "
+                         "or add your own directional bases.")
     text = (job_id + " " + " ".join(evaluation.get("matched_skills", []))).lower()
-    if any(x in text for x in ("multimodal", "vision", "cv")):
-        return "multimodal_cv"
-    if any(x in text for x in ("agent", "tool", "workflow")):
-        return "ai_agent"
-    if any(x in text for x in ("llm", "training", "data", "annotation")):
-        return "llm_training_data"
-    return "ai_engineering"
+    for base in bases:
+        if any(x in text for x in base.replace("_", " ").split()):
+            return base
+    return bases[0]
 
 
 def assert_provenance(base: str) -> list[dict]:
@@ -71,11 +80,22 @@ def assert_provenance(base: str) -> list[dict]:
     data = read_json(path)
     if not data.get("bullets"):
         raise SystemExit("Refusing to generate a resume with no evidence-linked bullets.")
+    from provenance_schema import validate_manifest
+    # base manifests use job_id "base-<name>"; normalize for the shared validator
+    errors = validate_manifest({**data, "job_id": base})
+    if errors:
+        raise SystemExit(f"{path.name} violates schemas/provenance.schema.json:\n- " + "\n- ".join(errors))
     return data["bullets"]
 
 
 def md_to_docx(markdown: Path, output: Path) -> None:
     """Export a constrained resume Markdown document without interpreting claims."""
+    try:
+        from docx import Document
+        from docx.enum.text import WD_ALIGN_PARAGRAPH
+        from docx.shared import Inches, Pt
+    except ImportError as exc:
+        raise SystemExit("DOCX export needs the optional document extra: pip install -r requirements-docs.txt") from exc
     doc = Document()
     section = doc.sections[0]
     section.top_margin = section.bottom_margin = Inches(0.65)
@@ -129,9 +149,19 @@ def create_materials(args) -> None:
         "evaluation": {"path": str(source / "evaluation.json"), "sha256": digest(source / "evaluation.json"), "score": evaluation.get("total")},
         "bullets": bullets, "status": "draft_requires_human_review",
     }
+    try:
+        from provenance_schema import validate_manifest
+        schema_errors = validate_manifest(provenance)
+        if schema_errors:
+            raise SystemExit("Provenance does not satisfy schemas/provenance.schema.json:\n- "
+                             + "\n- ".join(schema_errors))
+    except ImportError:
+        pass
     write_json(target / "provenance.json", provenance)
-    docx = target / "resume.docx"
-    md_to_docx(resume, docx)
+    try:
+        md_to_docx(resume, target / "resume.docx")
+    except SystemExit as exc:
+        print(f"NOTE: DOCX export skipped ({exc})", file=sys.stderr)
     print(f"Created evidence-linked draft -> {target.relative_to(ROOT)}")
 
 
@@ -159,7 +189,7 @@ def cover_letter(args) -> None:
         raise SystemExit("Create the local application archive first.")
     data = read_json(manifest)
     provenance = read_json(Path(data["materials"]["provenance"]))
-    evidence = ", ".join(item["fact_id"] for item in provenance["bullets"])
+    evidence = ", ".join(", ".join(item.get("fact_ids") or [item["fact_id"]]) for item in provenance["bullets"])
     text = f"# Cover Letter Draft — {args.job_id}\n\nDear Hiring Team,\n\nI am applying for this opportunity because its stated requirements align with the verified project evidence in my application materials. My relevant records are limited to the attached resume's source-linked work: {evidence}.\n\nI would welcome the opportunity to discuss how this evidence relates to the role's requirements.\n\nSincerely,\n{SIGNATURE}\n\n<!-- status: draft; evidence: {evidence} -->\n"
     (app / "cover_letter.md").write_text(text, encoding="utf-8")
     print(f"Created evidence-linked cover-letter draft -> {app.relative_to(ROOT) / 'cover_letter.md'}")
@@ -287,7 +317,7 @@ def verify_resume(args) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
-    p = sub.add_parser("generate-resume"); p.add_argument("job_id"); p.add_argument("--base", choices=["multimodal_cv", "llm_training_data", "ai_agent", "ai_engineering"]); p.add_argument("--replace", action="store_true"); p.set_defaults(func=create_materials)
+    p = sub.add_parser("generate-resume"); p.add_argument("job_id"); p.add_argument("--base")  # any provenance-backed base under resumes/base/; p.add_argument("--replace", action="store_true"); p.set_defaults(func=create_materials)
     p = sub.add_parser("create-application"); p.add_argument("job_id"); p.set_defaults(func=create_application)
     p = sub.add_parser("cover-letter"); p.add_argument("job_id"); p.set_defaults(func=cover_letter)
     p = sub.add_parser("interview-pack"); p.add_argument("job_id"); p.set_defaults(func=interview_pack)

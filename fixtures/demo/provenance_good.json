@@ -1,0 +1,18 @@
+{
+  "job_id": "demo-gate",
+  "note": "Synthetic provenance that PASSES the gate. Bullets match resume_good.md exactly.",
+  "bullets": [
+    {
+      "bullet_id": "demo-bullet-1",
+      "text": "Built a local agent workflow with tool wiring and written definitions of done.",
+      "fact_ids": ["project_example"],
+      "evidence_paths": ["fixtures/demo/evidence/example_agent.md"]
+    },
+    {
+      "bullet_id": "demo-bullet-2",
+      "text": "Added human review gates so consequential actions need explicit confirmation.",
+      "fact_ids": ["project_demo_tool"],
+      "evidence_paths": ["fixtures/demo/evidence/example_agent.md"]
+    }
+  ]
+}

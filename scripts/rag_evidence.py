@@ -14,7 +14,7 @@ Design notes
 Usage:
     python rag_evidence.py index
     python rag_evidence.py search "autoregressive sequence models"
-    python rag_evidence.py match-req cohere_ml_intern_winter2027
+    python rag_evidence.py match-req demo-ai-intern
 """
 from __future__ import annotations
 

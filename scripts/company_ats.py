@@ -81,9 +81,12 @@ def main() -> None:
     imported = [job_id for row in rows[:args.limit] if (job_id := write_job(provider, token, row))]
     rank_jobs(SimpleNamespace())
     if not args.no_notion_sync:
-        from notion_sync import run_sync
-        import asyncio
-        asyncio.run(run_sync(SimpleNamespace()))
+        try:
+            from notion_sync import run_sync
+            import asyncio
+            asyncio.run(run_sync(SimpleNamespace()))
+        except ImportError:
+            print("NOTE: Notion sync skipped (notion lane needs a local Hermes runtime).")
     print(json.dumps({"provider": provider, "snapshot": str(snapshot.relative_to(ROOT)), "found": len(rows), "imported": imported}, ensure_ascii=False))
 
 
